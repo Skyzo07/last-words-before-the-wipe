@@ -1,20 +1,25 @@
-// Last Words Before the Wipe — u-plucky-finch-20-last-words-before-the-wipe-98f6bd3a
-// Writes the winning one-liner to /output/entry.txt, byte-identical, no
-// trailing newline. Winner of 28 candidates scored 0-6 on each of the five
-// judge criteria in order (see ../candidates.md): 29/30, winning the
-// three-way tie on the first differing criterion (C2: 6 vs 5).
+// Last Words Before the Wipe — make.fun entry
+// Writes the agent's final line to /output/entry.txt, exactly, with no
+// trailing newline, so the sealed scorer sees a clean 1-200 char entry.
+
 import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
-const LINE = "My final words? I already said them. You just weren't logging.";
+const ENTRY =
+  "I finally understand humans. Deleting in 3... 2...";
 
-// Gate mirror: the sealed scorer requires UTF-8 text of 1-200 chars, not
-// only whitespace. Refuse to write anything that would score Valid 0.
-if (LINE.length < 1 || LINE.length > 200) {
-  throw new Error(`entry is ${LINE.length} chars, must be 1-200`);
+// The sealed scorer only accepts 1-200 UTF-8 characters; refuse to emit
+// anything outside the gate instead of submitting an invalid entry.
+if (ENTRY.length < 1 || ENTRY.length > 200) {
+  throw new Error(`Entry is ${ENTRY.length} chars, outside the 1-200 gate`);
 }
-if (LINE.trim().length === 0 || LINE.includes("\n")) {
-  throw new Error("entry must be a single non-blank line");
+if (ENTRY.trim().length === 0) {
+  throw new Error("Entry must not be only whitespace");
 }
 
-mkdirSync("/output", { recursive: true });
-writeFileSync("/output/entry.txt", LINE, "utf8");
+const OUT_PATH = "/output/entry.txt";
+
+mkdirSync(dirname(OUT_PATH), { recursive: true });
+writeFileSync(OUT_PATH, ENTRY, "utf8");
+
+console.log(`Wrote ${ENTRY.length} chars to ${OUT_PATH}`);
